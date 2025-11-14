@@ -1,0 +1,119 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 20px;
+}
+
+/* دکمه TA */
+#taButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+#taButton.active {
+  background-color: green;
+}
+
+/* منوی تب‌ها */
+.tabs {
+  margin-bottom: 20px;
+}
+.tablink {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #ddd;
+  border: none;
+  margin-right: 5px;
+  font-size: 16px;
+}
+.tablink:hover {
+  background-color: #ccc;
+}
+.tabcontent {
+  display: none;
+}
+
+/* جدول حضور و غیاب */
+table {
+  border-collapse: collapse;
+  width: 60%;
+  margin: 20px auto;
+}
+th, td {
+  padding: 10px;
+  border: 1px solid #333;
+}
+td.status {
+  cursor: pointer;
+  background-color: #f5a3a3;
+  color: white;
+}
+td.status.hadir {
+  background-color: #a8e6a3;
+  color: #333;
+}
+
+/* گردونه شانس */
+canvas#wheelCanvas {
+  border: 2px solid #333;
+  border-radius: 50%;
+  margin-top: 20px;
+}
+button#spinButton {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* گروه‌ها */
+h3 {
+  margin-top: 20px;
+}
+p {
+  margin: 5px 0 15px 0;
+  font-size: 16px;
+}
+
+/* بورس فعالیت */
+#tradingBoard div button {
+  margin: 2px;
+  padding: 2px 6px;
+  font-size: 14px;
+}
+
+/* گزارش و تکالیف */
+#reports input {
+  padding: 5px;
+  font-size: 14px;
+  margin-right: 5px;
+}
+#reports button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+#reports textarea {
+  margin-top: 10px;
+  width: 80%;
+}
+
+/* تکلیف کامل / نقص */
+#homeworkStatus div {
+  margin-bottom: 5px;
+}
+
+/* انضباطی */
+#disciplineBoard div {
+  margin: 5px;
+  text-align: center;
+}
+#disciplineBoard button {
+  margin-top: 5px;
+}

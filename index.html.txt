@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dr-shakeri-arabic-class-9</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    
+    <h1>کلاس عربی نهم – دکتر شاکری</h1>
+
+    <section id="taSection">
+      <h2>TA</h2>
+      <button id="taButton">TA</button>
+    </section>
+
+    <div class="tabs">
+      <button class="tablink" onclick="openTab('attendance')">حضور و غیاب</button>
+      <button class="tablink" onclick="openTab('wheel')">گردونه</button>
+      <button class="tablink" onclick="openTab('groups')">گروه‌ها</button>
+      <button class="tablink" onclick="openTab('scoreboard')">بورس فعالیت</button>
+      <button class="tablink" onclick="openTab('reports')">گزارش و تکالیف</button>
+      <button class="tablink" onclick="openTab('discipline')">انضباطی</button>
+    </div>
+
+    <div id="attendance" class="tabcontent">
+      <h2>جدول حضور و غیاب</h2>
+      <table id="attendanceTable">
+        <tr><th>نام دانش‌آموز</th><th>وضعیت</th></tr>
+        <tr><td>سینا</td><td class="status">غایب</td></tr>
+        <tr><td>کوشان</td><td class="status">غایب</td></tr>
+        <tr><td>امیرحسین</td><td class="status">غایب</td></tr>
+        <tr><td>امیرسام</td><td class="status">غایب</td></tr>
+        <tr><td>امیررضا</td><td class="status">غایب</td></tr>
+        <tr><td>سپهر</td><td class="status">غایب</td></tr>
+        <tr><td>ارمیا</td><td class="status">غایب</td></tr>
+        <tr><td>امیرحافظ</td><td class="status">غایب</td></tr>
+        <tr><td>آریو</td><td class="status">غایب</td></tr>
+        <tr><td>نیکان</td><td class="status">غایب</td></tr>
+        <tr><td>تایماز</td><td class="status">غایب</td></tr>
+        <tr><td>پارسا</td><td class="status">غایب</td></tr>
+        <tr><td>رهام</td><td class="status">غایب</td></tr>
+        <tr><td>علی</td><td class="status">غایب</td></tr>
+        <tr><td>آرشا</td><td class="status">غایب</td></tr>
+        <tr><td>پرهام</td><td class="status">غایب</td></tr>
+      </table>
+    </div>
+
+    <div id="wheel" class="tabcontent">
+      <h2>گردونه شانس</h2>
+      <div style="position: relative;
+        display: inline-block;">
+        <canvas id="wheelCanvas" width="400" height="400"></canvas>
+        <div style="position: absolute; top: -10px; left: 50%;
+          transform: translateX(-50%); font-size: 30px;">⬆️</div>
+      </div>
+      <br>
+      <button id="spinButton">چرخش گردونه!</button>
+    </div>
+
+    <div id="groups" class="tabcontent">
+      <h2>گروه‌های کلاس</h2>
+      <div id="groupsDiv"></div>
+    </div>
+
+    <div id="scoreboard" class="tabcontent">
+      <h2>بورس فعالیت</h2>
+      <div id="tradingBoard" style="display: flex;
+        justify-content: space-around; align-items: flex-end; height: 200px; margin-top: 20px;"></div>
+    </div>
+
+    <div id="reports" class="tabcontent">
+      <h2>گزارش تدریس و تکالیف</h2>
+
+      <h3>تکالیف:</h3>
+      <ul id="homeworkList"></ul>
+      <input type="text" id="newHomework" placeholder="تکلیف جدید">
+      <button onclick="addHomework()">اضافه کن</button>
+
+      <h3>وضعیت تکالیف دانش‌آموزان:</h3>
+      <div id="homeworkStatus"></div>
+    </div>
+
+    <div id="discipline" class="tabcontent">
+      <h2>انضباطی دانش‌آموزان</h2>
+      <div id="disciplineBoard" style="display: flex;
+        flex-wrap: wrap; justify-content: center;"></div>
+    </div>
+
+    <script src="script.js"></script> 
+</body>
+</html>
