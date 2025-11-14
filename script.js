@@ -249,12 +249,10 @@ function createDisciplineBoard() {
 
     const minusBtn = document.createElement("button");
     minusBtn.textContent = "-";
-    // 🟢 **اصلاح قطعی:** امتیاز را کم می‌کند و از صفر پایین‌تر نمی‌آورد.
+    // 🎯 اصلاح نهایی: دکمه منفی، امتیاز انضباطی را اضافه می‌کند (طبق درخواست شما)
     minusBtn.onclick = () => { 
-      if (disciplineCounts[student] > 0) { 
-        disciplineCounts[student]--;
-        countLabel.textContent = disciplineCounts[student];
-      }
+      disciplineCounts[student]++; 
+      countLabel.textContent = disciplineCounts[student];
     };
     container.appendChild(minusBtn);
     disciplineBoard.appendChild(container);
