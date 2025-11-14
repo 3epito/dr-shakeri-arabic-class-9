@@ -249,12 +249,9 @@ function createDisciplineBoard() {
 
     const minusBtn = document.createElement("button");
     minusBtn.textContent = "-";
-    // **اصلاح شده:** عملگر ++ حذف شد و جایگزین شد.
-    minusBtn.onclick = () => { 
-      if (disciplineCounts[student] > 0) {
-        disciplineCounts[student]--;
-        countLabel.textContent = disciplineCounts[student];
-      }
+    minusBtn.onclick = () => {
+      disciplineCounts[student]++;
+      countLabel.textContent = disciplineCounts[student];
     };
     container.appendChild(minusBtn);
     disciplineBoard.appendChild(container);
