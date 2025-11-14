@@ -249,9 +249,12 @@ function createDisciplineBoard() {
 
     const minusBtn = document.createElement("button");
     minusBtn.textContent = "-";
-    minusBtn.onclick = () => {
-      disciplineCounts[student]++;
-      countLabel.textContent = disciplineCounts[student];
+    // 🟢 **اصلاح قطعی:** امتیاز را کم می‌کند و از صفر پایین‌تر نمی‌آورد.
+    minusBtn.onclick = () => { 
+      if (disciplineCounts[student] > 0) { 
+        disciplineCounts[student]--;
+        countLabel.textContent = disciplineCounts[student];
+      }
     };
     container.appendChild(minusBtn);
     disciplineBoard.appendChild(container);
