@@ -22,6 +22,11 @@
       <button class="tablink" onclick="openTab('scoreboard')">بورس فعالیت</button>
       <button class="tablink" onclick="openTab('reports')">گزارش و تکالیف</button>
       <button class="tablink" onclick="openTab('discipline')">انضباطی</button>
+      <button class="tablink" onclick="openTab('book')">کتاب درسی</button>
+      <button class="tablink" onclick="openTab('music')">آهنگ‌ها</button>
+      <button class="tablink" onclick="openTab('seating')">وضعیت نشستن</button>
+      <button class="tablink" onclick="openTab('quiz')">پرسش‌های کلاسی</button>
+      <button class="tablink" onclick="openTab('league')">لیگ عربی کاپ</button>
     </div>
 
     <div id="attendance" class="tabcontent">
@@ -87,6 +92,47 @@
       <div id="disciplineBoard" style="display: flex;
         flex-wrap: wrap; justify-content: center;"></div>
     </div>
+    
+    <div id="book" class="tabcontent">
+      <h2>کتاب درسی عربی نهم</h2>
+      <p>فایل کتاب عربی نهم با نام **'nohom-arabi-1404.pdf'** بارگذاری شده است.</p>
+      <iframe id="bookIframe" src="nohom-arabi-1404.pdf" style="width: 90%; height: 600px; border: 1px solid #ccc;"></iframe>
+    </div>
+
+    <div id="music" class="tabcontent">
+      <h2>آهنگ‌های مورد پسند کلاس</h2>
+      <div id="musicList">
+        </div>
+      <p>فایل‌های صوتی خود را در پوشه music/ و در فایل script.js به لیست اضافه کنید.</p>
+    </div>
+
+    <div id="seating" class="tabcontent">
+      <h2>نقشه کلاس (وضعیت نشستن)</h2>
+      <div id="classroom" style="width: 800px; height: 500px; background-color: #f8f8f8; border: 1px solid #333; margin: 20px auto; position: relative;">
+        <div id="smartboard" style="width: 700px; height: 50px; background-color: #333; color: white; text-align: center; line-height: 50px; position: absolute; top: 10px; left: 50px;">تخته هوشمند</div>
+        <div id="teacherDesk" style="width: 100px; height: 70px; background-color: brown; color: white; text-align: center; line-height: 70px; font-size: 14px; position: absolute; top: 80px; left: 50px; border-radius: 5px;">میز معلم</div>
+        <div id="seatingArrangement"></div>
+      </div>
+    </div>
+
+    <div id="quiz" class="tabcontent">
+      <h2>پرسش‌های کلاسی</h2>
+      <div id="quizBoard">
+        </div>
+      <h3>نمره دهی:</h3>
+      <select id="quizScoreSelect"></select>
+      <button onclick="applyQuizScore()">اعمال نمره</button>
+    </div>
+
+    <div id="league" class="tabcontent">
+      <h2>لیگ عربی کاپ (کارگاه ترجمه)</h2>
+      <div id="leagueBoard">
+        </div>
+      <h3>نمره دهی گروهی:</h3>
+      <select id="leagueScoreSelect"></select>
+      <button onclick="applyLeagueScore()">اعمال نمره به گروه</button>
+    </div>
+
 
     <script src="script.js"></script> 
 </body>
