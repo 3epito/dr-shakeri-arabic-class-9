@@ -108,6 +108,7 @@
 
     <div id="seating" class="tabcontent">
       <h2>نقشه کلاس (وضعیت نشستن)</h2>
+      <p>توجه: نام دانش‌آموزان را می‌توانید با ماوس جابجا کنید. پس از جابجایی، موقعیت آن‌ها ذخیره می‌شود.</p>
       <div id="classroom" style="width: 800px; height: 500px; background-color: #f8f8f8; border: 1px solid #333; margin: 20px auto; position: relative;">
         <div id="smartboard" style="width: 700px; height: 50px; background-color: #333; color: white; text-align: center; line-height: 50px; position: absolute; top: 10px; left: 50px;">تخته هوشمند</div>
         <div id="teacherDesk" style="width: 100px; height: 70px; background-color: brown; color: white; text-align: center; line-height: 70px; font-size: 14px; position: absolute; top: 80px; left: 50px; border-radius: 5px;">میز معلم</div>
@@ -120,7 +121,7 @@
       <div id="quizBoard">
         </div>
       <h3>نمره دهی:</h3>
-      <select id="quizScoreSelect"></select>
+      <input type="number" step="0.25" id="quizScoreInput" placeholder="نمره (مثلاً 0.75)">
       <button onclick="applyQuizScore()">اعمال نمره</button>
     </div>
 
@@ -129,7 +130,7 @@
       <div id="leagueBoard">
         </div>
       <h3>نمره دهی گروهی:</h3>
-      <select id="leagueScoreSelect"></select>
+      <input type="number" step="0.25" id="leagueScoreInput" placeholder="نمره (مثلاً 0.5)">
       <button onclick="applyLeagueScore()">اعمال نمره به گروه</button>
     </div>
 
