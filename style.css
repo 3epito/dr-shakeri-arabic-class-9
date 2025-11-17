@@ -126,23 +126,23 @@ p {
     position: absolute;
     width: 150px;
     height: 70px;
-    background-color: green; /* میز سبز */
     border-radius: 5px;
 }
-.single-seat {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background-color: blue; /* صندلی تکی آبی */
-    border-radius: 50%;
+/* ⬅️ تعیین رنگ‌های مجزا برای میزها */
+.desk-pair.blue {
+    background-color: #007bff; /* آبی */
 }
+.desk-pair.green {
+    background-color: #4CAF50; /* سبز */
+}
+
 .student-name {
     position: absolute;
     background-color: #fff;
     border: 1px solid #333;
     padding: 3px 5px;
     border-radius: 3px;
-    cursor: move; /* قابل جابجایی با موس */
+    cursor: move; /* ⬅️ قابلیت کشیدن (Drag) اسم دانش‌آموزان */
     font-size: 12px;
     white-space: nowrap;
     z-index: 10; 
