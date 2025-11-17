@@ -117,3 +117,50 @@ p {
 #disciplineBoard button {
   margin-top: 5px;
 }
+
+/* استایل‌های جدید برای نقشه کلاس */
+#classroom {
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.desk-pair {
+    position: absolute;
+    width: 150px;
+    height: 70px;
+    background-color: green; /* میز سبز */
+    border-radius: 5px;
+}
+.single-seat {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: blue; /* صندلی تکی آبی */
+    border-radius: 50%;
+}
+.student-name {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #333;
+    padding: 3px 5px;
+    border-radius: 3px;
+    cursor: move; /* قابل جابجایی با موس */
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10; 
+    text-align: center;
+}
+
+/* استایل‌های جدید برای جداول نمره‌دهی */
+#quizBoard table, #leagueBoard table {
+    border-collapse: collapse;
+    width: 60%;
+    margin: 20px auto;
+}
+#quizBoard th, #quizBoard td, #leagueBoard th, #leagueBoard td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: right;
+}
+#quizBoard td:last-child, #leagueBoard td:last-child {
+    font-weight: bold;
+    color: #4CAF50;
+}
