@@ -1,32 +1,28 @@
 // ======= داده‌های جدید برای پرسش‌ها، لیگ و نقشه کلاس =======
 
-const availableScores = [
-  0.25, 0.5, 0.75, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.5, 3.75, 4, 4.25, 4.5, 4.75, 5
-];
-
-const musicFiles = [
-    { name: "آهنگ عربی ۱", src: "music/arabic_song1.mp3" },
-    { name: "آهنگ کلاسیک ۲", src: "music/classic_song2.mp3" }
-    // آدرس فایل‌های MP3 خود را در اینجا اضافه کنید.
-];
-
 const students = [
   "سینا","کوشان","امیرحسین","امیرسام","امیررضا",
   "سپهر","ارمیا","امیرحافظ","آریو","نیکان",
   "تایماز","پارسا","رهام","علی","آرشا","پرهام"
 ];
 
+// ⬅️ آرایه‌ی initialSeats: دو میز اول آبی و بقیه سبز
 const initialSeats = [
-    // میزهای دو نفره سبز (8 میز)
-    { type: 'desk-pair', x: 200, y: 100, students: ["سینا", "کوشان"] },
-    { type: 'desk-pair', x: 200, y: 200, students: ["امیرحسین", "امیرسام"] },
-    { type: 'desk-pair', x: 200, y: 300, students: ["امیررضا", "سپهر"] },
-    { type: 'desk-pair', x: 200, y: 400, students: ["ارمیا", "امیرحافظ"] },
-    
-    { type: 'desk-pair', x: 500, y: 100, students: ["آریو", "نیکان"] },
-    { type: 'desk-pair', x: 500, y: 200, students: ["تایماز", "پارسا"] },
-    { type: 'desk-pair', x: 500, y: 300, students: ["رهام", "علی"] },
-    { type: 'desk-pair', x: 500, y: 400, students: ["آرشا", "پرهام"] },
+    // ردیف ۱ (نزدیک تخته) - میزهای آبی
+    { type: 'desk-pair', x: 150, y: 120, color: 'blue', students: ["سینا", "کوشان"] },
+    { type: 'desk-pair', x: 500, y: 120, color: 'blue', students: ["امیرحسین", "امیرسام"] },
+
+    // ردیف ۲ - میزهای سبز
+    { type: 'desk-pair', x: 150, y: 220, color: 'green', students: ["امیررضا", "سپهر"] },
+    { type: 'desk-pair', x: 500, y: 220, color: 'green', students: ["ارمیا", "امیرحافظ"] },
+
+    // ردیف ۳ - میزهای سبز
+    { type: 'desk-pair', x: 150, y: 320, color: 'green', students: ["آریو", "نیکان"] },
+    { type: 'desk-pair', x: 500, y: 320, color: 'green', students: ["تایماز", "پارسا"] },
+
+    // ردیف ۴ (آخر) - میزهای سبز
+    { type: 'desk-pair', x: 150, y: 420, color: 'green', students: ["رهام", "علی"] },
+    { type: 'desk-pair', x: 500, y: 420, color: 'green', students: ["آرشا", "پرهام"] },
 ];
 
 const groups = {
@@ -312,6 +308,10 @@ createDisciplineBoard();
 // **********************************************
 
 // ======= ۲. تب آهنگ‌ها =======
+const musicFiles = [
+    { name: "آهنگ عربی ۱", src: "music/arabic_song1.mp3" },
+    { name: "آهنگ کلاسیک ۲", src: "music/classic_song2.mp3" }
+];
 function setupMusicPlayer() {
     const musicListDiv = document.getElementById('musicList');
     musicListDiv.innerHTML = '';
@@ -333,52 +333,33 @@ function setupMusicPlayer() {
     });
 }
 
-// ======= ۳. تب وضعیت نشستن (Drag & Drop) =======
-
+// ======= ۳. تب وضعیت نشستن (Drag & Drop) - اصلاح شده =======
 function setupSeatingArrangement() {
     const arrangementDiv = document.getElementById('seatingArrangement');
     arrangementDiv.innerHTML = ''; 
     
-    // موقعیت‌های ذخیره شده را بارگذاری می‌کند
     let currentStudentPositions = JSON.parse(localStorage.getItem('studentPositions')) || studentPositions;
     
-    // تعریف صندلی‌های تکی (آبی) برای دانش‌آموزان اول لیست
-    const singleSeats = [
-        { type: 'single-seat', x: 100, y: 150, student: students[0] }, // سینا
-        { type: 'single-seat', x: 100, y: 350, student: students[1] } // کوشان
-    ];
-    
-    // نمایش میزهای سبز دو نفره
     seatingArrangement.forEach(seat => {
         const desk = document.createElement('div');
         desk.className = 'desk-pair';
+        
+        // ⬅️ اعمال کلاس رنگی بر اساس ویژگی color
+        if (seat.color) {
+            desk.classList.add(seat.color);
+        }
+
         desk.style.left = `${seat.x}px`;
         desk.style.top = `${seat.y}px`;
         arrangementDiv.appendChild(desk);
 
-        // صندلی اول
-        let pos1 = currentStudentPositions[seat.students[0]] || { x: seat.x + 10, y: seat.y - 20 };
+        // صندلی اول - موقعیت اولیه (عقب‌تر از میز)
+        let pos1 = currentStudentPositions[seat.students[0]] || { x: seat.x + 10, y: seat.y + 75 }; // Y + 75 برای عقب‌تر قرار گرفتن
         createDraggableStudent(seat.students[0], pos1.x, pos1.y, arrangementDiv);
         
-        // صندلی دوم
-        let pos2 = currentStudentPositions[seat.students[1]] || { x: seat.x + 80, y: seat.y - 20 };
+        // صندلی دوم - موقعیت اولیه (عقب‌تر از میز)
+        let pos2 = currentStudentPositions[seat.students[1]] || { x: seat.x + 80, y: seat.y + 75 }; // Y + 75 برای عقب‌تر قرار گرفتن
         createDraggableStudent(seat.students[1], pos2.x, pos2.y, arrangementDiv);
-    });
-
-    // نمایش صندلی‌های تکی آبی
-    singleSeats.forEach(seat => {
-        const chair = document.createElement('div');
-        chair.className = 'single-seat';
-        chair.style.left = `${seat.x}px`;
-        chair.style.top = `${seat.y}px`;
-        arrangementDiv.appendChild(chair);
-
-        let pos = currentStudentPositions[seat.student] || { x: seat.x, y: seat.y + 50 };
-        
-        // اگر دانش‌آموز قبلاً به میز دونفره منتقل نشده است، صندلی تکی را نمایش می‌دهد
-        if (!document.getElementById(`student-${seat.student}`)) {
-           createDraggableStudent(seat.student, pos.x, pos.y, arrangementDiv);
-        }
     });
 
     localStorage.setItem('seatingArrangement', JSON.stringify(seatingArrangement));
@@ -410,7 +391,7 @@ function createDraggableStudent(name, initialX, initialY, parentElement) {
         let newX = e.clientX - parentRect.left - offsetX;
         let newY = e.clientY - parentRect.top - offsetY;
 
-        // اعمال محدودیت‌ها
+        // اعمال محدودیت‌ها: در داخل محدوده div#classroom بماند
         newX = Math.max(0, Math.min(newX, parentRect.width - student.offsetWidth));
         newY = Math.max(0, Math.min(newY, parentRect.height - student.offsetHeight));
 
@@ -432,23 +413,11 @@ function createDraggableStudent(name, initialX, initialY, parentElement) {
 }
 
 
-// ======= ۴. تب پرسش‌های کلاسی (نمره فردی) =======
+// ======= ۴. تب پرسش‌های کلاسی (نمره فردی) - اصلاح شده برای نمره اعشاری =======
 let selectedQuizStudent = null;
 
 function setupQuizBoard() {
     const boardDiv = document.getElementById('quizBoard');
-    const select = document.getElementById('quizScoreSelect');
-    
-    // تنظیم Select Box فقط یکبار انجام شود
-    if (select.options.length === 0) {
-        availableScores.forEach(score => {
-            const option = document.createElement('option');
-            option.value = score;
-            option.textContent = '+' + score;
-            select.appendChild(option);
-        });
-    }
-
     boardDiv.innerHTML = '<table><tr><th>نام دانش‌آموز</th><th>نمره پرسش</th><th>عملیات</th></tr></table>';
     const table = boardDiv.querySelector('table');
     
@@ -456,7 +425,6 @@ function setupQuizBoard() {
         const row = table.insertRow();
         row.id = `quiz-${student}`;
         row.insertCell().textContent = student;
-        // مطمئن می‌شویم که نمره نمایش داده می‌شود
         row.insertCell().textContent = quizScores[student] !== undefined ? quizScores[student] : 0;
         
         const cell = row.insertCell();
@@ -476,7 +444,14 @@ function selectStudentForQuiz(student) {
 
 function applyQuizScore() {
     if (!selectedQuizStudent) { alert('لطفاً ابتدا دانش‌آموز را انتخاب کنید.'); return; }
-    const score = parseFloat(document.getElementById('quizScoreSelect').value);
+    
+    const scoreInput = document.getElementById('quizScoreInput');
+    const score = parseFloat(scoreInput.value);
+
+    if (isNaN(score) || score === 0) {
+        alert('لطفاً یک عدد معتبر و غیر صفر (مثلاً 0.75 یا 1.5) برای نمره وارد کنید.'); 
+        return;
+    }
     
     quizScores[selectedQuizStudent] = (quizScores[selectedQuizStudent] || 0) + score;
     const selectedRow = document.getElementById(`quiz-${selectedQuizStudent}`);
@@ -484,27 +459,18 @@ function applyQuizScore() {
     
     localStorage.setItem('quizScores', JSON.stringify(quizScores));
     alert(`نمره ${score} به ${selectedQuizStudent} اضافه شد.`);
+    
+    scoreInput.value = '';
     selectedQuizStudent = null;
     document.querySelectorAll('#quizBoard tr').forEach(row => row.style.backgroundColor = 'transparent');
 }
 
 
-// ======= ۵. تب لیگ عربی کاپ (نمره گروهی) =======
+// ======= ۵. تب لیگ عربی کاپ (نمره گروهی) - اصلاح شده برای نمره اعشاری =======
 let selectedLeagueGroup = null;
 
 function setupLeagueBoard() {
     const boardDiv = document.getElementById('leagueBoard');
-    const select = document.getElementById('leagueScoreSelect');
-    
-    if (select.options.length === 0) {
-        availableScores.forEach(score => {
-            const option = document.createElement('option');
-            option.value = score;
-            option.textContent = '+' + score;
-            select.appendChild(option);
-        });
-    }
-
     boardDiv.innerHTML = '<table><tr><th>نام گروه</th><th>نمره لیگ</th><th>عملیات</th></tr></table>';
     const table = boardDiv.querySelector('table');
     
@@ -531,7 +497,14 @@ function selectGroupForLeague(groupName) {
 
 function applyLeagueScore() {
     if (!selectedLeagueGroup) { alert('لطفاً ابتدا گروه را انتخاب کنید.'); return; }
-    const score = parseFloat(document.getElementById('leagueScoreSelect').value);
+    
+    const scoreInput = document.getElementById('leagueScoreInput');
+    const score = parseFloat(scoreInput.value);
+    
+    if (isNaN(score) || score === 0) {
+        alert('لطفاً یک عدد معتبر و غیر صفر (مثلاً 0.75 یا 1.5) برای نمره وارد کنید.'); 
+        return;
+    }
     
     leagueScores[selectedLeagueGroup] = (leagueScores[selectedLeagueGroup] || 0) + score;
     const selectedRow = document.getElementById(`league-${selectedLeagueGroup.replace(/\s/g, '-')}`);
@@ -539,9 +512,12 @@ function applyLeagueScore() {
     
     localStorage.setItem('leagueScores', JSON.stringify(leagueScores));
     alert(`نمره ${score} به گروه ${selectedLeagueGroup} اضافه شد.`);
+    
+    scoreInput.value = '';
     selectedLeagueGroup = null;
     document.querySelectorAll('#leagueBoard tr').forEach(row => row.style.backgroundColor = 'transparent');
 }
+
 
 // **********************************************
 // ********** ذخیره و بارگذاری (بروزرسانی شده) ****
