@@ -1,9 +1,66 @@
-// ======= مدیریت تب‌ها =======
+// ======= داده‌های جدید برای پرسش‌ها، لیگ و نقشه کلاس =======
+
+const availableScores = [
+  0.25, 0.5, 0.75, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.5, 3.75, 4, 4.25, 4.5, 4.75, 5
+];
+
+const musicFiles = [
+    { name: "آهنگ عربی ۱", src: "music/arabic_song1.mp3" },
+    { name: "آهنگ کلاسیک ۲", src: "music/classic_song2.mp3" }
+    // آدرس فایل‌های MP3 خود را در اینجا اضافه کنید.
+];
+
+const students = [
+  "سینا","کوشان","امیرحسین","امیرسام","امیررضا",
+  "سپهر","ارمیا","امیرحافظ","آریو","نیکان",
+  "تایماز","پارسا","رهام","علی","آرشا","پرهام"
+];
+
+const initialSeats = [
+    // میزهای دو نفره سبز (8 میز)
+    { type: 'desk-pair', x: 200, y: 100, students: ["سینا", "کوشان"] },
+    { type: 'desk-pair', x: 200, y: 200, students: ["امیرحسین", "امیرسام"] },
+    { type: 'desk-pair', x: 200, y: 300, students: ["امیررضا", "سپهر"] },
+    { type: 'desk-pair', x: 200, y: 400, students: ["ارمیا", "امیرحافظ"] },
+    
+    { type: 'desk-pair', x: 500, y: 100, students: ["آریو", "نیکان"] },
+    { type: 'desk-pair', x: 500, y: 200, students: ["تایماز", "پارسا"] },
+    { type: 'desk-pair', x: 500, y: 300, students: ["رهام", "علی"] },
+    { type: 'desk-pair', x: 500, y: 400, students: ["آرشا", "پرهام"] },
+];
+
+const groups = {
+  "اشهک های خر کوتوله": ["ارمیا","نیکان","پارسا","سینا"],
+  "قوردلارین قایدیشی": ["سپهر","آرشا","رهام","کوشان"],
+  "پان عرب ها": ["امیرسام","آریو","تایماز","علی"],
+  "اوچینگلس ها": ["امیررضا","پرهام","امیرحافظ","امیرحسین"]
+};
+
+// متغیرهای ذخیره وضعیت نشستن
+let seatingArrangement = JSON.parse(localStorage.getItem('seatingArrangement')) || initialSeats;
+let studentPositions = JSON.parse(localStorage.getItem('studentPositions')) || {};
+
+// متغیرهای ذخیره نمرات جدید
+const quizScores = JSON.parse(localStorage.getItem('quizScores')) || {};
+const leagueScores = JSON.parse(localStorage.getItem('leagueScores')) || {};
+
+// اطمینان از مقداردهی اولیه نمرات
+students.forEach(s => { if (!quizScores[s]) quizScores[s] = 0; });
+Object.keys(groups).forEach(g => { if (!leagueScores[g]) leagueScores[g] = 0; });
+
+
+// ======= مدیریت تب‌ها (بروزرسانی شده) =======
 function openTab(tabName) {
   document.querySelectorAll('.tabcontent').forEach(tc => tc.style.display = 'none');
   document.getElementById(tabName).style.display = 'block';
+  // فراخوانی توابع جدید هنگام باز شدن تب
+  if (tabName === 'seating') setupSeatingArrangement(); 
+  if (tabName === 'music') setupMusicPlayer();
+  if (tabName === 'quiz') setupQuizBoard();
+  if (tabName === 'league') setupLeagueBoard();
 }
 openTab('attendance'); // تب پیش‌فرض
+
 
 // ======= تاریخ =======
 const dateInput = document.createElement("input");
@@ -43,11 +100,6 @@ statusCells.forEach(cell => {
 });
 
 // ======= گردونه شانس =======
-const students = [
-  "سینا","کوشان","امیرحسین","امیرسام","امیررضا",
-  "سپهر","ارمیا","امیرحافظ","آریو","نیکان",
-  "تایماز","پارسا","رهام","علی","آرشا","پرهام"
-];
 const colors = [
   "#f94144","#f3722c","#f8961e","#90be6d",
   "#43aa8b","#577590","#f9c74f","#f9844a",
@@ -105,12 +157,6 @@ document.getElementById("spinButton").addEventListener("click", () => {
 drawWheel();
 
 // ======= گروه‌ها =======
-const groups = {
-  "اشهک های خر کوتوله": ["ارمیا","نیکان","پارسا","سینا"],
-  "قوردلارین قایدیشی": ["سپهر","آرشا","رهام","کوشان"],
-  "پان عرب ها": ["امیرسام","آریو","تایماز","علی"],
-  "اوچینگلس ها": ["امیررضا","پرهام","امیرحافظ","امیرحسین"]
-};
 const groupsDiv = document.getElementById("groupsDiv");
 for (let groupName in groups) {
   const groupTitle = document.createElement("h3");
@@ -249,7 +295,7 @@ function createDisciplineBoard() {
 
     const minusBtn = document.createElement("button");
     minusBtn.textContent = "-";
-    // 🎯 اصلاح قطعی: دکمه منفی، امتیاز انضباطی را اضافه می‌کند
+    // 🎯 دکمه منفی، امتیاز انضباطی (نمره منفی) را اضافه می‌کند
     minusBtn.onclick = () => { 
       disciplineCounts[student]++; 
       countLabel.textContent = disciplineCounts[student];
@@ -260,7 +306,247 @@ function createDisciplineBoard() {
 }
 createDisciplineBoard();
 
-// ======= ذخیره و بارگذاری =======
+
+// **********************************************
+// ********** منطق ۵ قابلیت جدید *****************
+// **********************************************
+
+// ======= ۲. تب آهنگ‌ها =======
+function setupMusicPlayer() {
+    const musicListDiv = document.getElementById('musicList');
+    musicListDiv.innerHTML = '';
+    musicFiles.forEach(track => {
+        const div = document.createElement('div');
+        div.style.margin = '15px';
+
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = track.src;
+        audio.style.width = '300px';
+
+        const nameLabel = document.createElement('p');
+        nameLabel.textContent = track.name;
+
+        div.appendChild(nameLabel);
+        div.appendChild(audio);
+        musicListDiv.appendChild(div);
+    });
+}
+
+// ======= ۳. تب وضعیت نشستن (Drag & Drop) =======
+
+function setupSeatingArrangement() {
+    const arrangementDiv = document.getElementById('seatingArrangement');
+    arrangementDiv.innerHTML = ''; 
+    
+    // موقعیت‌های ذخیره شده را بارگذاری می‌کند
+    let currentStudentPositions = JSON.parse(localStorage.getItem('studentPositions')) || studentPositions;
+    
+    // تعریف صندلی‌های تکی (آبی) برای دانش‌آموزان اول لیست
+    const singleSeats = [
+        { type: 'single-seat', x: 100, y: 150, student: students[0] }, // سینا
+        { type: 'single-seat', x: 100, y: 350, student: students[1] } // کوشان
+    ];
+    
+    // نمایش میزهای سبز دو نفره
+    seatingArrangement.forEach(seat => {
+        const desk = document.createElement('div');
+        desk.className = 'desk-pair';
+        desk.style.left = `${seat.x}px`;
+        desk.style.top = `${seat.y}px`;
+        arrangementDiv.appendChild(desk);
+
+        // صندلی اول
+        let pos1 = currentStudentPositions[seat.students[0]] || { x: seat.x + 10, y: seat.y - 20 };
+        createDraggableStudent(seat.students[0], pos1.x, pos1.y, arrangementDiv);
+        
+        // صندلی دوم
+        let pos2 = currentStudentPositions[seat.students[1]] || { x: seat.x + 80, y: seat.y - 20 };
+        createDraggableStudent(seat.students[1], pos2.x, pos2.y, arrangementDiv);
+    });
+
+    // نمایش صندلی‌های تکی آبی
+    singleSeats.forEach(seat => {
+        const chair = document.createElement('div');
+        chair.className = 'single-seat';
+        chair.style.left = `${seat.x}px`;
+        chair.style.top = `${seat.y}px`;
+        arrangementDiv.appendChild(chair);
+
+        let pos = currentStudentPositions[seat.student] || { x: seat.x, y: seat.y + 50 };
+        
+        // اگر دانش‌آموز قبلاً به میز دونفره منتقل نشده است، صندلی تکی را نمایش می‌دهد
+        if (!document.getElementById(`student-${seat.student}`)) {
+           createDraggableStudent(seat.student, pos.x, pos.y, arrangementDiv);
+        }
+    });
+
+    localStorage.setItem('seatingArrangement', JSON.stringify(seatingArrangement));
+}
+
+function createDraggableStudent(name, initialX, initialY, parentElement) {
+    const student = document.createElement('div');
+    student.className = 'student-name';
+    student.id = `student-${name}`;
+    student.textContent = name;
+    student.style.left = `${initialX}px`;
+    student.style.top = `${initialY}px`;
+    student.draggable = true;
+    
+    let isDragging = false;
+    let offsetX, offsetY;
+    
+    student.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - student.getBoundingClientRect().left;
+        offsetY = e.clientY - student.getBoundingClientRect().top;
+        student.style.zIndex = 100;
+        e.preventDefault(); 
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const parentRect = parentElement.getBoundingClientRect();
+        let newX = e.clientX - parentRect.left - offsetX;
+        let newY = e.clientY - parentRect.top - offsetY;
+
+        // اعمال محدودیت‌ها
+        newX = Math.max(0, Math.min(newX, parentRect.width - student.offsetWidth));
+        newY = Math.max(0, Math.min(newY, parentRect.height - student.offsetHeight));
+
+        student.style.left = `${newX}px`;
+        student.style.top = `${newY}px`;
+        
+        studentPositions[name] = { x: newX, y: newY };
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            student.style.zIndex = 10; 
+            localStorage.setItem('studentPositions', JSON.stringify(studentPositions));
+        }
+    });
+    
+    parentElement.appendChild(student);
+}
+
+
+// ======= ۴. تب پرسش‌های کلاسی (نمره فردی) =======
+let selectedQuizStudent = null;
+
+function setupQuizBoard() {
+    const boardDiv = document.getElementById('quizBoard');
+    const select = document.getElementById('quizScoreSelect');
+    
+    // تنظیم Select Box فقط یکبار انجام شود
+    if (select.options.length === 0) {
+        availableScores.forEach(score => {
+            const option = document.createElement('option');
+            option.value = score;
+            option.textContent = '+' + score;
+            select.appendChild(option);
+        });
+    }
+
+    boardDiv.innerHTML = '<table><tr><th>نام دانش‌آموز</th><th>نمره پرسش</th><th>عملیات</th></tr></table>';
+    const table = boardDiv.querySelector('table');
+    
+    students.forEach(student => {
+        const row = table.insertRow();
+        row.id = `quiz-${student}`;
+        row.insertCell().textContent = student;
+        // مطمئن می‌شویم که نمره نمایش داده می‌شود
+        row.insertCell().textContent = quizScores[student] !== undefined ? quizScores[student] : 0;
+        
+        const cell = row.insertCell();
+        const btn = document.createElement('button');
+        btn.textContent = 'انتخاب';
+        btn.onclick = () => selectStudentForQuiz(student);
+        cell.appendChild(btn);
+    });
+}
+
+function selectStudentForQuiz(student) {
+    selectedQuizStudent = student;
+    document.querySelectorAll('#quizBoard tr').forEach(row => row.style.backgroundColor = 'transparent');
+    const selectedRow = document.getElementById(`quiz-${student}`);
+    if (selectedRow) selectedRow.style.backgroundColor = '#f0f0a0';
+}
+
+function applyQuizScore() {
+    if (!selectedQuizStudent) { alert('لطفاً ابتدا دانش‌آموز را انتخاب کنید.'); return; }
+    const score = parseFloat(document.getElementById('quizScoreSelect').value);
+    
+    quizScores[selectedQuizStudent] = (quizScores[selectedQuizStudent] || 0) + score;
+    const selectedRow = document.getElementById(`quiz-${selectedQuizStudent}`);
+    if (selectedRow) selectedRow.cells[1].textContent = quizScores[selectedQuizStudent];
+    
+    localStorage.setItem('quizScores', JSON.stringify(quizScores));
+    alert(`نمره ${score} به ${selectedQuizStudent} اضافه شد.`);
+    selectedQuizStudent = null;
+    document.querySelectorAll('#quizBoard tr').forEach(row => row.style.backgroundColor = 'transparent');
+}
+
+
+// ======= ۵. تب لیگ عربی کاپ (نمره گروهی) =======
+let selectedLeagueGroup = null;
+
+function setupLeagueBoard() {
+    const boardDiv = document.getElementById('leagueBoard');
+    const select = document.getElementById('leagueScoreSelect');
+    
+    if (select.options.length === 0) {
+        availableScores.forEach(score => {
+            const option = document.createElement('option');
+            option.value = score;
+            option.textContent = '+' + score;
+            select.appendChild(option);
+        });
+    }
+
+    boardDiv.innerHTML = '<table><tr><th>نام گروه</th><th>نمره لیگ</th><th>عملیات</th></tr></table>';
+    const table = boardDiv.querySelector('table');
+    
+    Object.keys(groups).forEach(groupName => {
+        const row = table.insertRow();
+        row.id = `league-${groupName.replace(/\s/g, '-')}`;
+        row.insertCell().textContent = groupName;
+        row.insertCell().textContent = leagueScores[groupName] !== undefined ? leagueScores[groupName] : 0;
+        
+        const cell = row.insertCell();
+        const btn = document.createElement('button');
+        btn.textContent = 'انتخاب';
+        btn.onclick = () => selectGroupForLeague(groupName);
+        cell.appendChild(btn);
+    });
+}
+
+function selectGroupForLeague(groupName) {
+    selectedLeagueGroup = groupName;
+    document.querySelectorAll('#leagueBoard tr').forEach(row => row.style.backgroundColor = 'transparent');
+    const selectedRow = document.getElementById(`league-${groupName.replace(/\s/g, '-')}`);
+    if (selectedRow) selectedRow.style.backgroundColor = '#f0f0a0';
+}
+
+function applyLeagueScore() {
+    if (!selectedLeagueGroup) { alert('لطفاً ابتدا گروه را انتخاب کنید.'); return; }
+    const score = parseFloat(document.getElementById('leagueScoreSelect').value);
+    
+    leagueScores[selectedLeagueGroup] = (leagueScores[selectedLeagueGroup] || 0) + score;
+    const selectedRow = document.getElementById(`league-${selectedLeagueGroup.replace(/\s/g, '-')}`);
+    if (selectedRow) selectedRow.cells[1].textContent = leagueScores[selectedLeagueGroup];
+    
+    localStorage.setItem('leagueScores', JSON.stringify(leagueScores));
+    alert(`نمره ${score} به گروه ${selectedLeagueGroup} اضافه شد.`);
+    selectedLeagueGroup = null;
+    document.querySelectorAll('#leagueBoard tr').forEach(row => row.style.backgroundColor = 'transparent');
+}
+
+// **********************************************
+// ********** ذخیره و بارگذاری (بروزرسانی شده) ****
+// **********************************************
+
 function saveSession() {
   const date = dateInput.value;
   if(!date) { alert("لطفاً تاریخ را انتخاب کنید."); return; }
@@ -272,8 +558,10 @@ function saveSession() {
       return statusSpan.textContent;
     }),
     discipline: {...disciplineCounts},
-    taActive: taButton.classList.contains("active")
-    // بورس فعالیت‌ها جدا ذخیره نمی‌کنیم چون دائمی هستند
+    taActive: taButton.classList.contains("active"),
+    quiz: {...quizScores}, // ذخیره پرسش‌های کلاسی
+    league: {...leagueScores}, // ذخیره لیگ عربی کاپ
+    seat_pos: {...studentPositions} // ذخیره موقعیت صندلی‌ها
   };
   localStorage.setItem("session_" + date, JSON.stringify(data));
   alert("جلسه ذخیره شد!");
@@ -309,20 +597,49 @@ function loadSession() {
     });
     createDisciplineBoard();
 
+    // پرسش‌ها (جدید)
+    Object.assign(quizScores, data.quiz);
+    setupQuizBoard();
+
+    // لیگ کاپ (جدید)
+    Object.assign(leagueScores, data.league);
+    setupLeagueBoard();
+    
+    // وضعیت نشستن (جدید)
+    Object.assign(studentPositions, data.seat_pos);
+    setupSeatingArrangement();
+
     // TA
     if(data.taActive) taButton.classList.add("active");
     else taButton.classList.remove("active");
 
     alert("جلسه بارگذاری شد!");
   } else {
-    // اگر داده‌ای نیست، همه ریست شوند به جز بورس فعالیت‌ها
+    // اگر داده‌ای نیست، همه ریست شوند
     statusCells.forEach(c => { c.classList.remove('hadir'); c.textContent = "غایب"; });
     createHomeworkStatus();
+    
+    // ریست انضباطی
     Object.keys(disciplineCounts).forEach(k => disciplineCounts[k]=0);
     createDisciplineBoard();
+    
+    // ریست داده‌های جدید
+    Object.keys(quizScores).forEach(k => quizScores[k]=0);
+    setupQuizBoard();
+    Object.keys(leagueScores).forEach(k => leagueScores[k]=0);
+    setupLeagueBoard();
+    studentPositions = {};
+    setupSeatingArrangement();
+    
     taButton.classList.remove("active");
   }
 }
 
 saveBtn.addEventListener("click", saveSession);
 loadBtn.addEventListener("click", loadSession);
+
+// اطمینان از تنظیم اولیه بوردها و Selectها
+document.addEventListener('DOMContentLoaded', () => {
+    setupQuizBoard();
+    setupLeagueBoard();
+});
