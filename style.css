@@ -133,7 +133,7 @@ p {
     background-color: #007bff; /* آبی */
 }
 .desk-pair.green {
-    background-color: #4CAF50; /* سبز */
+    background-color: #4CAF50; /* ⬅️ سبز اصلاح شده */
 }
 
 .student-name {
@@ -142,7 +142,7 @@ p {
     border: 1px solid #333;
     padding: 3px 5px;
     border-radius: 3px;
-    cursor: move; /* ⬅️ قابلیت کشیدن (Drag) اسم دانش‌آموزان */
+    cursor: move; 
     font-size: 12px;
     white-space: nowrap;
     z-index: 10; 
