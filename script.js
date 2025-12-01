@@ -8,19 +8,19 @@ const students = [
 
 // ⬅️ آرایه‌ی initialSeats: دو میز اول آبی و بقیه سبز
 const initialSeats = [
-    // ردیف ۱ (نزدیک تخته) - میزهای آبی
+    // ردیف ۱ (نزدیک تخته) - میزهای آبی (مرتب و تراز)
     { type: 'desk-pair', x: 150, y: 120, color: 'blue', students: ["سینا", "کوشان"] },
     { type: 'desk-pair', x: 500, y: 120, color: 'blue', students: ["امیرحسین", "امیرسام"] },
 
-    // ردیف ۲ - میزهای سبز
+    // ردیف ۲ - میزهای سبز (مرتب و تراز)
     { type: 'desk-pair', x: 150, y: 220, color: 'green', students: ["امیررضا", "سپهر"] },
     { type: 'desk-pair', x: 500, y: 220, color: 'green', students: ["ارمیا", "امیرحافظ"] },
 
-    // ردیف ۳ - میزهای سبز
+    // ردیف ۳ - میزهای سبز (مرتب و تراز)
     { type: 'desk-pair', x: 150, y: 320, color: 'green', students: ["آریو", "نیکان"] },
     { type: 'desk-pair', x: 500, y: 320, color: 'green', students: ["تایماز", "پارسا"] },
 
-    // ردیف ۴ (آخر) - میزهای سبز
+    // ردیف ۴ (آخر) - میزهای سبز (مرتب و تراز)
     { type: 'desk-pair', x: 150, y: 420, color: 'green', students: ["رهام", "علی"] },
     { type: 'desk-pair', x: 500, y: 420, color: 'green', students: ["آرشا", "پرهام"] },
 ];
@@ -39,9 +39,14 @@ let studentPositions = JSON.parse(localStorage.getItem('studentPositions')) || {
 // متغیرهای ذخیره نمرات جدید
 const quizScores = JSON.parse(localStorage.getItem('quizScores')) || {};
 const leagueScores = JSON.parse(localStorage.getItem('leagueScores')) || {};
+const studentsScore = JSON.parse(localStorage.getItem('studentsScore')) || {}; // ⬅️ متغیر بورس فعالیت
+
 
 // اطمینان از مقداردهی اولیه نمرات
-students.forEach(s => { if (!quizScores[s]) quizScores[s] = 0; });
+students.forEach(s => { 
+    if (!quizScores[s]) quizScores[s] = 0; 
+    if (!studentsScore[s]) studentsScore[s] = 0; // ⬅️ بارگذاری/مقداردهی اولیه بورس فعالیت
+});
 Object.keys(groups).forEach(g => { if (!leagueScores[g]) leagueScores[g] = 0; });
 
 
@@ -54,6 +59,7 @@ function openTab(tabName) {
   if (tabName === 'music') setupMusicPlayer();
   if (tabName === 'quiz') setupQuizBoard();
   if (tabName === 'league') setupLeagueBoard();
+  if (tabName === 'scoreboard') setupTradingBoard(); 
 }
 openTab('attendance'); // تب پیش‌فرض
 
@@ -81,7 +87,7 @@ taButton.addEventListener("click", () => {
   taButton.classList.toggle("active");
 });
 
-// ======= حضور و غیاب =======
+// ======= حضور و غیاب (بدون تغییر) =======
 const statusCells = document.querySelectorAll('.status');
 statusCells.forEach(cell => {
   cell.addEventListener('click', () => {
@@ -95,7 +101,7 @@ statusCells.forEach(cell => {
   });
 });
 
-// ======= گردونه شانس =======
+// ======= گردونه شانس (بدون تغییر) =======
 const colors = [
   "#f94144","#f3722c","#f8961e","#90be6d",
   "#43aa8b","#577590","#f9c74f","#f9844a",
@@ -152,7 +158,7 @@ document.getElementById("spinButton").addEventListener("click", () => {
 });
 drawWheel();
 
-// ======= گروه‌ها =======
+// ======= گروه‌ها (بدون تغییر) =======
 const groupsDiv = document.getElementById("groupsDiv");
 for (let groupName in groups) {
   const groupTitle = document.createElement("h3");
@@ -163,64 +169,82 @@ for (let groupName in groups) {
   groupsDiv.appendChild(namesText);
 }
 
-// ======= بورس فعالیت =======
-const studentsScore = {};
-students.forEach(s => studentsScore[s] = 0);
+// ======= بورس فعالیت (بدون تغییر در منطق) =======
 const board = document.getElementById("tradingBoard");
 
-students.forEach(student => {
-  const container = document.createElement("div");
-  container.style.display = "flex";
-  container.style.flexDirection = "column-reverse";
-  container.style.alignItems = "center";
+function setupTradingBoard() {
+    board.innerHTML = ""; 
+    students.forEach(student => {
+        const container = document.createElement("div");
+        container.style.display = "flex";
+        container.style.flexDirection = "column-reverse";
+        container.style.alignItems = "center";
+        
+        const bars = document.createElement("div");
+        bars.style.display = "flex";
+        bars.style.flexDirection = "column-reverse";
+        bars.style.alignItems = "center";
+        bars.id = `bars-${student}`;
+        container.appendChild(bars);
 
-  const bars = document.createElement("div");
-  bars.style.display = "flex";
-  bars.style.flexDirection = "column-reverse";
-  bars.style.alignItems = "center";
-  container.appendChild(bars);
+        for(let i=0; i < (studentsScore[student] || 0); i++) {
+            const dot = document.createElement("div");
+            dot.style.width = "20px";
+            dot.style.height = "20px";
+            dot.style.backgroundColor = "#43aa8b";
+            dot.style.margin = "2px 0";
+            bars.appendChild(dot);
+        }
 
-  const nameLabel = document.createElement("div");
-  nameLabel.textContent = student;
-  nameLabel.style.marginTop = "5px";
-  container.appendChild(nameLabel);
+        const nameLabel = document.createElement("div");
+        nameLabel.textContent = student;
+        nameLabel.style.marginTop = "5px";
+        container.appendChild(nameLabel);
 
-  const btnContainer = document.createElement("div");
-  btnContainer.style.marginTop = "5px";
+        const btnContainer = document.createElement("div");
+        btnContainer.style.marginTop = "5px";
 
-  const addBtn = document.createElement("button");
-  addBtn.textContent = "+";
-  addBtn.onclick = () => addActivity(student, bars);
+        const addBtn = document.createElement("button");
+        addBtn.textContent = "+";
+        addBtn.onclick = () => addActivity(student);
 
-  const removeBtn = document.createElement("button");
-  removeBtn.textContent = "-";
-  removeBtn.onclick = () => removeActivity(student, bars);
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "-";
+        removeBtn.onclick = () => removeActivity(student);
 
-  btnContainer.appendChild(addBtn);
-  btnContainer.appendChild(removeBtn);
-  container.appendChild(btnContainer);
+        btnContainer.appendChild(addBtn);
+        btnContainer.appendChild(removeBtn);
+        container.appendChild(btnContainer);
 
-  board.appendChild(container);
-});
+        board.appendChild(container);
+    });
+    localStorage.setItem('studentsScore', JSON.stringify(studentsScore)); 
+}
 
-function addActivity(student, barsDiv) {
+function addActivity(student) {
   studentsScore[student]++;
+  const barsDiv = document.getElementById(`bars-${student}`);
   const dot = document.createElement("div");
   dot.style.width = "20px";
   dot.style.height = "20px";
   dot.style.backgroundColor = "#43aa8b";
   dot.style.margin = "2px 0";
   barsDiv.appendChild(dot);
+  localStorage.setItem('studentsScore', JSON.stringify(studentsScore)); 
 }
 
-function removeActivity(student, barsDiv) {
+function removeActivity(student) {
   if (studentsScore[student] > 0) {
     studentsScore[student]--;
+    const barsDiv = document.getElementById(`bars-${student}`);
     if (barsDiv.lastChild) barsDiv.removeChild(barsDiv.lastChild);
+    localStorage.setItem('studentsScore', JSON.stringify(studentsScore)); 
   }
 }
+setupTradingBoard(); 
 
-// ======= گزارش و تکالیف =======
+
+// ======= گزارش و تکالیف (بدون تغییر) =======
 function addHomework() {
   const input = document.getElementById("newHomework");
   if(input.value.trim() !== "") {
@@ -268,7 +292,7 @@ function createHomeworkStatus() {
 }
 createHomeworkStatus();
 
-// ======= انضباطی =======
+// ======= انضباطی (بدون تغییر) =======
 const disciplineBoard = document.getElementById("disciplineBoard");
 const disciplineCounts = {};
 function createDisciplineBoard() {
@@ -291,7 +315,6 @@ function createDisciplineBoard() {
 
     const minusBtn = document.createElement("button");
     minusBtn.textContent = "-";
-    // 🎯 دکمه منفی، امتیاز انضباطی (نمره منفی) را اضافه می‌کند
     minusBtn.onclick = () => { 
       disciplineCounts[student]++; 
       countLabel.textContent = disciplineCounts[student];
@@ -307,7 +330,7 @@ createDisciplineBoard();
 // ********** منطق ۵ قابلیت جدید *****************
 // **********************************************
 
-// ======= ۲. تب آهنگ‌ها =======
+// ======= ۲. تب آهنگ‌ها (بدون تغییر) =======
 const musicFiles = [
     { name: "آهنگ عربی ۱", src: "music/arabic_song1.mp3" },
     { name: "آهنگ کلاسیک ۲", src: "music/classic_song2.mp3" }
@@ -333,18 +356,19 @@ function setupMusicPlayer() {
     });
 }
 
-// ======= ۳. تب وضعیت نشستن (Drag & Drop) - اصلاح شده =======
+// ======= ۳. تب وضعیت نشستن (Drag & Drop) - اصلاح چینش و مختصات اولیه =======
 function setupSeatingArrangement() {
     const arrangementDiv = document.getElementById('seatingArrangement');
     arrangementDiv.innerHTML = ''; 
     
+    // اگر موقعیت‌های ذخیره شده وجود دارند، از آن‌ها استفاده شود، در غیر این صورت موقعیت پیش‌فرض اعمال می‌شود.
     let currentStudentPositions = JSON.parse(localStorage.getItem('studentPositions')) || studentPositions;
     
     seatingArrangement.forEach(seat => {
         const desk = document.createElement('div');
         desk.className = 'desk-pair';
         
-        // ⬅️ اعمال کلاس رنگی بر اساس ویژگی color
+        // اعمال کلاس رنگی بر اساس ویژگی color
         if (seat.color) {
             desk.classList.add(seat.color);
         }
@@ -353,12 +377,15 @@ function setupSeatingArrangement() {
         desk.style.top = `${seat.y}px`;
         arrangementDiv.appendChild(desk);
 
-        // صندلی اول - موقعیت اولیه (عقب‌تر از میز)
-        let pos1 = currentStudentPositions[seat.students[0]] || { x: seat.x + 10, y: seat.y + 75 }; // Y + 75 برای عقب‌تر قرار گرفتن
+        // ⬅️ تنظیم دقیق مختصات اولیه نام دانش‌آموزان روی صندلی
+        
+        // صندلی اول: سمت راست میز (نزدیک‌تر به وسط کلاس)
+        // x: فاصله از چپ میز (10 پیکسل) + عرض میز (150) - عرض اسم (تقریبی 40)
+        let pos1 = currentStudentPositions[seat.students[0]] || { x: seat.x + 80, y: seat.y + 75 }; 
         createDraggableStudent(seat.students[0], pos1.x, pos1.y, arrangementDiv);
         
-        // صندلی دوم - موقعیت اولیه (عقب‌تر از میز)
-        let pos2 = currentStudentPositions[seat.students[1]] || { x: seat.x + 80, y: seat.y + 75 }; // Y + 75 برای عقب‌تر قرار گرفتن
+        // صندلی دوم: سمت چپ میز (نزدیک‌تر به دیوار)
+        let pos2 = currentStudentPositions[seat.students[1]] || { x: seat.x + 10, y: seat.y + 75 }; 
         createDraggableStudent(seat.students[1], pos2.x, pos2.y, arrangementDiv);
     });
 
@@ -413,7 +440,7 @@ function createDraggableStudent(name, initialX, initialY, parentElement) {
 }
 
 
-// ======= ۴. تب پرسش‌های کلاسی (نمره فردی) - اصلاح شده برای نمره اعشاری =======
+// ======= ۴. تب پرسش‌های کلاسی (بدون تغییر) =======
 let selectedQuizStudent = null;
 
 function setupQuizBoard() {
@@ -466,7 +493,7 @@ function applyQuizScore() {
 }
 
 
-// ======= ۵. تب لیگ عربی کاپ (نمره گروهی) - اصلاح شده برای نمره اعشاری =======
+// ======= ۵. تب لیگ عربی کاپ (بدون تغییر) =======
 let selectedLeagueGroup = null;
 
 function setupLeagueBoard() {
@@ -520,7 +547,7 @@ function applyLeagueScore() {
 
 
 // **********************************************
-// ********** ذخیره و بارگذاری (بروزرسانی شده) ****
+// ********** ذخیره و بارگذاری (اصلاح ریست) ****
 // **********************************************
 
 function saveSession() {
@@ -535,9 +562,9 @@ function saveSession() {
     }),
     discipline: {...disciplineCounts},
     taActive: taButton.classList.contains("active"),
-    quiz: {...quizScores}, // ذخیره پرسش‌های کلاسی
-    league: {...leagueScores}, // ذخیره لیگ عربی کاپ
-    seat_pos: {...studentPositions} // ذخیره موقعیت صندلی‌ها
+    quiz: {...quizScores}, 
+    league: {...leagueScores}, 
+    seat_pos: {...studentPositions}, // ذخیره موقعیت صندلی‌ها
   };
   localStorage.setItem("session_" + date, JSON.stringify(data));
   alert("جلسه ذخیره شد!");
@@ -549,7 +576,7 @@ function loadSession() {
   const data = JSON.parse(localStorage.getItem("session_" + date));
 
   if(data) {
-    // حضور و غیاب
+    // 1. بارگذاری داده‌های جلسه
     statusCells.forEach((c,i) => {
       if(data.attendance[i] === "حاضر") {
         c.classList.add('hadir');
@@ -560,54 +587,65 @@ function loadSession() {
       }
     });
 
-    // تکالیف
     homeworkStatusDiv.childNodes.forEach((div,i) => {
       const statusSpan = div.querySelector("span:last-child");
       statusSpan.textContent = data.homework[i];
       statusSpan.style.color = data.homework[i] === "کامل" ? "green" : data.homework[i] === "نقص" ? "red" : "black";
     });
 
-    // انضباطی
     Object.keys(data.discipline).forEach(student => {
       disciplineCounts[student] = data.discipline[student];
     });
     createDisciplineBoard();
 
-    // پرسش‌ها (جدید)
     Object.assign(quizScores, data.quiz);
     setupQuizBoard();
 
-    // لیگ کاپ (جدید)
     Object.assign(leagueScores, data.league);
     setupLeagueBoard();
     
-    // وضعیت نشستن (جدید)
     Object.assign(studentPositions, data.seat_pos);
     setupSeatingArrangement();
 
-    // TA
     if(data.taActive) taButton.classList.add("active");
     else taButton.classList.remove("active");
 
+    // بورس فعالیت دست‌نخورده باقی می‌ماند و فقط بازسازی می‌شود.
+    setupTradingBoard(); 
+    
     alert("جلسه بارگذاری شد!");
   } else {
-    // اگر داده‌ای نیست، همه ریست شوند
+    // ⬅️ اگر داده‌ای نیست (ریست کامل به جز بورس)
+    
+    // ریست حضور و غیاب
     statusCells.forEach(c => { c.classList.remove('hadir'); c.textContent = "غایب"; });
+    
+    // ریست تکالیف
     createHomeworkStatus();
     
     // ریست انضباطی
     Object.keys(disciplineCounts).forEach(k => disciplineCounts[k]=0);
     createDisciplineBoard();
     
-    // ریست داده‌های جدید
+    // ریست پرسش‌ها
     Object.keys(quizScores).forEach(k => quizScores[k]=0);
     setupQuizBoard();
+    
+    // ریست لیگ کاپ
     Object.keys(leagueScores).forEach(k => leagueScores[k]=0);
     setupLeagueBoard();
+    
+    // ⬅️ ریست کامل وضعیت نشستن برای حل مشکل چینش به هم ریخته
     studentPositions = {};
+    localStorage.removeItem('studentPositions'); // ⬅️ پاک کردن موقعیت‌های به هم ریخته قبلی از حافظه
     setupSeatingArrangement();
     
+    // ریست TA
     taButton.classList.remove("active");
+
+    // بورس فعالیت (studentsScore) دست‌نخورده باقی می‌ماند.
+    
+    alert("داده‌ای برای این تاریخ وجود نداشت. همه موارد به جز بورس فعالیت ریست شدند و چینش میزها به حالت اولیه برگشت.");
   }
 }
 
@@ -618,4 +656,5 @@ loadBtn.addEventListener("click", loadSession);
 document.addEventListener('DOMContentLoaded', () => {
     setupQuizBoard();
     setupLeagueBoard();
+    setupTradingBoard();
 });
