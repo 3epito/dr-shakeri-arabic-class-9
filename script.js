@@ -356,19 +356,17 @@ function setupMusicPlayer() {
     });
 }
 
-// ======= ۳. تب وضعیت نشستن (Drag & Drop) - اصلاح چینش و مختصات اولیه =======
+// ======= ۳. تب وضعیت نشستن (Drag & Drop) - اصلاح رویدادهای لمسی و ماوس =======
 function setupSeatingArrangement() {
     const arrangementDiv = document.getElementById('seatingArrangement');
     arrangementDiv.innerHTML = ''; 
     
-    // اگر موقعیت‌های ذخیره شده وجود دارند، از آن‌ها استفاده شود، در غیر این صورت موقعیت پیش‌فرض اعمال می‌شود.
     let currentStudentPositions = JSON.parse(localStorage.getItem('studentPositions')) || studentPositions;
     
     seatingArrangement.forEach(seat => {
         const desk = document.createElement('div');
         desk.className = 'desk-pair';
         
-        // اعمال کلاس رنگی بر اساس ویژگی color
         if (seat.color) {
             desk.classList.add(seat.color);
         }
@@ -377,14 +375,10 @@ function setupSeatingArrangement() {
         desk.style.top = `${seat.y}px`;
         arrangementDiv.appendChild(desk);
 
-        // ⬅️ تنظیم دقیق مختصات اولیه نام دانش‌آموزان روی صندلی
-        
-        // صندلی اول: سمت راست میز (نزدیک‌تر به وسط کلاس)
-        // x: فاصله از چپ میز (10 پیکسل) + عرض میز (150) - عرض اسم (تقریبی 40)
+        // تنظیم موقعیت اولیه دانش‌آموزان
         let pos1 = currentStudentPositions[seat.students[0]] || { x: seat.x + 80, y: seat.y + 75 }; 
         createDraggableStudent(seat.students[0], pos1.x, pos1.y, arrangementDiv);
         
-        // صندلی دوم: سمت چپ میز (نزدیک‌تر به دیوار)
         let pos2 = currentStudentPositions[seat.students[1]] || { x: seat.x + 10, y: seat.y + 75 }; 
         createDraggableStudent(seat.students[1], pos2.x, pos2.y, arrangementDiv);
     });
@@ -399,24 +393,39 @@ function createDraggableStudent(name, initialX, initialY, parentElement) {
     student.textContent = name;
     student.style.left = `${initialX}px`;
     student.style.top = `${initialY}px`;
-    student.draggable = true;
     
     let isDragging = false;
     let offsetX, offsetY;
-    
-    student.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.clientX - student.getBoundingClientRect().left;
-        offsetY = e.clientY - student.getBoundingClientRect().top;
-        student.style.zIndex = 100;
-        e.preventDefault(); 
-    });
 
-    document.addEventListener('mousemove', (e) => {
+    // Helper to get coordinates from mouse or touch event
+    const getCoords = (e) => {
+        if (e.touches && e.touches.length > 0) {
+            return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+        }
+        return { clientX: e.clientX, clientY: e.clientY };
+    };
+
+    // تابع اصلی شروع درگ
+    const startDragging = (clientX, clientY, e) => {
+        isDragging = true;
+        const rect = student.getBoundingClientRect();
+        offsetX = clientX - rect.left;
+        offsetY = clientY - rect.top;
+        student.style.zIndex = 100;
+        student.style.cursor = 'grabbing'; 
+        
+        // ⬅️ بسیار مهم: جلوگیری از رفتار پیش‌فرض (مثل اسکرول)
+        e.preventDefault(); 
+        e.stopPropagation(); // برای جلوگیری از رسیدن به عناصر والد
+    };
+
+    // تابع اصلی حرکت درگ
+    const dragMove = (clientX, clientY) => {
         if (!isDragging) return;
         const parentRect = parentElement.getBoundingClientRect();
-        let newX = e.clientX - parentRect.left - offsetX;
-        let newY = e.clientY - parentRect.top - offsetY;
+        
+        let newX = clientX - parentRect.left - offsetX;
+        let newY = clientY - parentRect.top - offsetY;
 
         // اعمال محدودیت‌ها: در داخل محدوده div#classroom بماند
         newX = Math.max(0, Math.min(newX, parentRect.width - student.offsetWidth));
@@ -426,16 +435,56 @@ function createDraggableStudent(name, initialX, initialY, parentElement) {
         student.style.top = `${newY}px`;
         
         studentPositions[name] = { x: newX, y: newY };
-    });
+    };
 
-    document.addEventListener('mouseup', () => {
+    // تابع اصلی پایان درگ
+    const stopDragging = () => {
         if (isDragging) {
             isDragging = false;
             student.style.zIndex = 10; 
+            student.style.cursor = 'grab';
             localStorage.setItem('studentPositions', JSON.stringify(studentPositions));
         }
+    };
+
+
+    // ------------------------------------------
+    // 1. رویدادهای ماوس (برای کامپیوتر)
+    // ------------------------------------------
+    student.addEventListener('mousedown', (e) => {
+        startDragging(e.clientX, e.clientY, e);
     });
+
+    document.addEventListener('mousemove', (e) => {
+        dragMove(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('mouseup', stopDragging);
+
+    // ------------------------------------------
+    // 2. رویدادهای لمسی (برای موبایل و تبلت) 
+    // ------------------------------------------
+    // ⬅️ تنظیم passive: false برای فعالسازی e.preventDefault()
+    student.addEventListener('touchstart', (e) => {
+        const coords = getCoords(e);
+        startDragging(coords.clientX, coords.clientY, e);
+    }, { passive: false }); 
+
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        // ⬅️ جلوگیری از اسکرول صفحه هنگام کشیدن
+        e.preventDefault(); 
+        const coords = getCoords(e);
+        dragMove(coords.clientX, coords.clientY);
+    }, { passive: false });
+
+    document.addEventListener('touchend', stopDragging);
+    document.addEventListener('touchcancel', stopDragging);
+
+    // ------------------------------------------
     
+    // تنظیم اولیه نشانگر
+    student.style.cursor = 'grab';
     parentElement.appendChild(student);
 }
 
